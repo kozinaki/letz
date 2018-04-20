@@ -2,7 +2,7 @@
 Build automation tool for java project. Tool must be launch from root directory of project. 
 Project must content ini file **xyz.ini**.
 
-Exmaple
+Example
 ```
 sources=src/main/java
 resources=src/main/resources
