@@ -64,19 +64,18 @@ public class Letz {
     *           {compile, run, clean}
     */
     public static void main(String args[]) {
-        try {
+	Boolean errorState = false;
+        try(FileInputStream in = new FileInputStream(BUILD_FILE)) {
             properties = new Properties();
-            FileInputStream in = new FileInputStream(BUILD_FILE);
             properties.load(in);
-            in.close();
             _source = properties.getProperty(SOURCES_PROPERTY);
             _resources = properties.getProperty(RESOURCES_PROPERTY);
             _clazz = properties.getProperty(CLASS_PROPERTY);
             _build = properties.getProperty(BUILD_PROPERTY);
         } catch (IOException e) {
-            System.out.println("\nYou must have xyz.ini file to continue.");
-            return;
-        }
+            System.out.println("\n - You must have xyz.ini file to continue.\n");
+	    return;
+	}
         Action action;
         if(args.length != 0) {
             action = Action.getAction(args[0]);
@@ -101,7 +100,7 @@ public class Letz {
     }
 
     private static void printArgumentsException() {
-        System.out.println("\nYou must type some of arguments: \n\tcompile \n\trun \n\tclean");
+        System.out.println("\n - You must type some of arguments: \n\tcompile \n\trun \n\tclean\n");
     }
 
     /**
@@ -137,7 +136,9 @@ public class Letz {
             findResources(resources, new File(_resources), _build);
         } catch (IOException | InterruptedException e) {
             
-        }
+        } catch (Exception e) {
+	    System.out.println("\n - Error. Something happened during compile. Check xyz.ini file. Are properties correct?\n");
+	}
     }
 
     /**
@@ -210,7 +211,9 @@ public class Letz {
             proc.waitFor();
         } catch (IOException | InterruptedException e) {
 
-        }
+        } catch (Exception e) {
+	    System.out.println("\n - Error. Something happened during run. Check xyz.ini file. Are properties correct? Are necessary directories available?\n");
+	}
     }
 
     /**
