@@ -21,4 +21,4 @@ For launch tool
 java -jar letz.jar
 
 ```
-Tool have 3 actions - compile, run, clean
+Tool have 3 actions - **compile, run, clean**
