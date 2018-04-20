@@ -1,5 +1,8 @@
 package net.kozinaki.common;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Properties;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,11 +12,44 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
 
+/**
+* Build automation tool class.
+* @author kozinaki
+*/
 public class Letz {
+
+    /**
+    * Available actions.
+    */
+    enum Action {
+
+        COMPILE("compile"), /* compile project */
+        RUN("run"),         /* run project */
+        CLEAN("clean"),     /* clean project */
+        UNKNOWN("unknown");
+        
+        private String value;
+        
+        Action(String action) {
+            this.value = action;
+        }
+
+        static Action getAction(String value) {
+            for(Action action : Action.values()) {
+                if(value.equals(action.value))
+                    return action;
+            }
+            return UNKNOWN;
+        }
+
+    }
+
+    private static String BUILD_FILE = "xyz.ini";
+    private static String SOURCES_PROPERTY = "sources";
+    private static String RESOURCES_PROPERTY = "resources";
+    private static String CLASS_PROPERTY = "class";
+    private static String BUILD_PROPERTY = "build";
 
     private static Properties properties;
 
@@ -22,37 +58,41 @@ public class Letz {
     private static String _clazz;
     private static String _build;
 
+    /**
+    * Entry point.
+    * @param args action that tool must do
+    *           {compile, run, clean}
+    */
     public static void main(String args[]) {
         try {
             properties = new Properties();
-            FileInputStream in = new FileInputStream("xyz.ini");
+            FileInputStream in = new FileInputStream(BUILD_FILE);
             properties.load(in);
             in.close();
-            _source = properties.getProperty("source");
-            _resources = properties.getProperty("resources");
-            _clazz = properties.getProperty("class");
-            _build = properties.getProperty("build");
+            _source = properties.getProperty(SOURCES_PROPERTY);
+            _resources = properties.getProperty(RESOURCES_PROPERTY);
+            _clazz = properties.getProperty(CLASS_PROPERTY);
+            _build = properties.getProperty(BUILD_PROPERTY);
         } catch (IOException e) {
-            //e.printStackTrace();
             System.out.println("\nYou must have xyz.ini file to continue.");
             return;
         }
-        String arg;
-        if(args.length != 0)
-            arg = args[0];
-        else {
+        Action action;
+        if(args.length != 0) {
+            action = Action.getAction(args[0]);
+        } else {
             printArgumentsException();
             return;
         }
-        switch (arg) {
-            case "compile":
+        switch (action) {
+            case COMPILE:
                 compile();
                 break;
-            case "run":
+            case RUN:
                 run();
                 break;
-            case "clear":
-                clear();
+            case CLEAN:
+                clean();
                 break;
             default:
                 printArgumentsException();
@@ -61,10 +101,13 @@ public class Letz {
     }
 
     private static void printArgumentsException() {
-        System.out.println("\nYou must type some of arguments: \n\tcompile \n\trun \n\tclear");
+        System.out.println("\nYou must type some of arguments: \n\tcompile \n\trun \n\tclean");
     }
 
-    public static void compile() {
+    /**
+    * Compile project; That method response for action COMPILE.
+    */
+    private static void compile() {
         try {
             File buildDirectory = new File(_build);
             buildDirectory.mkdirs();
@@ -97,7 +140,12 @@ public class Letz {
         }
     }
 
-    public static void findSources(List<String> list, File path) throws IOException {
+    /**
+    * Find recursively sources java project that must be compile.
+    * @param list the list java sources for compile
+    * @param path the path where java sources are located
+    */ 
+    private static void findSources(List<String> list, File path) throws IOException {
         String[] fileSources = path.list();
         for(int i = 0; i < fileSources.length; i++) {
             if(fileSources[i].contains(".java")) {
@@ -109,6 +157,12 @@ public class Letz {
         }
     }
 
+    /**
+    * Find recursively resources java project that must be copied to build directory of project.
+    * @param list the list resources that must be copied
+    * @param path the path where resources are located
+    * @param inDir resource directory that must be copied
+    */
     private static void findResources(List<String> list, File path, String inDir) throws IOException {
         File[] fileResources = path.listFiles();        
         for(int i = 0; i < fileResources.length; i++) {
@@ -119,6 +173,11 @@ public class Letz {
         }
     }
 
+    /**
+    * Copy resource file to build directory of project.
+    * @param file the file that must be copied
+    * @param resourceDirectory resource directory that must be copied
+    */
     private static void copy(File file, String resourceDirectory) throws IOException {
         InputStream in = new FileInputStream(file);
         File directory = new File(resourceDirectory);
@@ -135,7 +194,10 @@ public class Letz {
         in.close();
     }
 
-    public static void run() {
+    /**
+    * Run project; That method response for action RUN.
+    */
+    private static void run() {
         try {
             String mainClass = _clazz.replace(".", "/");
             String[] procAndArgs = new String[] {"java", "-cp", _build, mainClass};
@@ -151,13 +213,20 @@ public class Letz {
         }
     }
 
-    public static void clear() {
+    /**
+    * Clean project; That method response for action CLEAN.
+    */
+    private static void clean() {
         String[] build = _build.split("/");
         File buildDirectory = new File(build[0]);
         if(buildDirectory.exists())
             deleteFiles(new File(build[0]));
     }
 
+    /**
+    * Recursively delete files from build directory.
+    * @param file the file that must be delete
+    */
     private static void deleteFiles(File file) {
         File[] listFiles = file.listFiles();
         for(int i = 0; i < listFiles.length; i++) {
