@@ -17,7 +17,7 @@ For build tool
 ./build.sh
 ```
 Also there are two argument keys:  
-**~/home/user/myJars/** - where letz.jar could store. This useful for letz.sh script for lauching letz.jar.  
+**~/home/user/myJars/** - where letz.jar could store. This useful for letz.sh script for launching letz.jar.  
 **~/home/user/bin/** - where letz.sh could store for launching from anywhere.  
 For example
 ```
