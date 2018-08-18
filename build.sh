@@ -5,5 +5,11 @@ jar -cfe letz.jar net.kozinaki.common.Letz -C bin .
 if [ ! -d "build" ]; then
 	mkdir build 
 fi
+echo -e '#!/bin/bash\njava -jar '$1'letz.jar $1' >> letz.sh
+chmod +x letz.sh
+mv letz.sh build
 mv letz.jar build
+if [[ $2 = "copy" ]]
+    then cp build/letz.* $1
+fi
 rm -r bin

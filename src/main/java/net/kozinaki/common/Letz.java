@@ -45,11 +45,12 @@ public class Letz {
 
     }
 
-    private static String BUILD_FILE = "xyz.ini";
+    private static String BUILD_FILE = "xyz.properties";
     private static String SOURCES_PROPERTY = "sources";
     private static String RESOURCES_PROPERTY = "resources";
     private static String CLASS_PROPERTY = "class";
     private static String BUILD_PROPERTY = "build";
+    private static String LOG_PROPERTY = "log";
 
     private static Properties properties;
 
@@ -57,6 +58,7 @@ public class Letz {
     private static String _resources;
     private static String _clazz;
     private static String _build;
+    private static boolean _log;
 
     /**
     * Entry point.
@@ -72,8 +74,9 @@ public class Letz {
             _resources = properties.getProperty(RESOURCES_PROPERTY);
             _clazz = properties.getProperty(CLASS_PROPERTY);
             _build = properties.getProperty(BUILD_PROPERTY);
+            _log = Boolean.parseBoolean(properties.getProperty(LOG_PROPERTY));
         } catch (IOException e) {
-            System.out.println("\n - You must have xyz.ini file to continue.\n");
+            System.out.println("\n - You must have xyz.properties file to continue.\n");
 	    return;
 	}
         Action action;
@@ -135,9 +138,12 @@ public class Letz {
             List<String> resources = new ArrayList<>();
             findResources(resources, new File(_resources), _build);
         } catch (IOException | InterruptedException e) {
-            
+            if(_log)
+                e.printStackTrace();
         } catch (Exception e) {
-	    System.out.println("\n - Error. Something happened during compile. Check xyz.ini file. Are properties correct?\n");
+            if(_log)
+                e.printStackTrace();
+	    System.out.println("\n - Error. Something happened during compile. Check xyz.properties file. Are properties correct?\n");
 	}
     }
 
@@ -151,8 +157,7 @@ public class Letz {
         for(int i = 0; i < fileSources.length; i++) {
             if(fileSources[i].contains(".java")) {
                 list.add(path.getAbsolutePath().concat("/").concat(fileSources[i]));
-            }
-            else {
+            } else if(new File(fileSources[i]).isDirectory()) {
                 findSources(list, new File(path.getAbsolutePath().concat("/").concat(fileSources[i])));
             }
         }
@@ -200,7 +205,7 @@ public class Letz {
     */
     private static void run() {
         try {
-            String mainClass = _clazz.replace(".", "/");
+            String mainClass = _clazz;//.replace(".", "/");
             String[] procAndArgs = new String[] {"java", "-cp", _build, mainClass};
             Process proc = Runtime.getRuntime().exec(procAndArgs);
             InputStream in = proc.getErrorStream();
@@ -210,9 +215,12 @@ public class Letz {
                 System.out.println(line);
             proc.waitFor();
         } catch (IOException | InterruptedException e) {
-
+            if(_log)
+                e.printStackTrace();
         } catch (Exception e) {
-	    System.out.println("\n - Error. Something happened during run. Check xyz.ini file. Are properties correct? Are necessary directories available?\n");
+            if(_log)
+                e.printStackTrace();
+	    System.out.println("\n - Error. Something happened during run. Check xyz.properties file. Are properties correct? Are necessary directories available?\n");
 	}
     }
 
