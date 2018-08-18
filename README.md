@@ -36,4 +36,4 @@ letz.sh
 
 After building there is another file - **letz.sh** that contains 
 
-Tool have 3 actions - **compile, run, clean**
+There are three actions - **compile, run, clean**
