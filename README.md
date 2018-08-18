@@ -9,16 +9,16 @@ resources=src/main/resources
 class=com.example.HelloWorld
 build=build/bin
 log=false
-
 ```
 
 For build tool
 ```
 ./build.sh
 ```
-Also there are two argument keys:  
-**~/home/user/myJars/** - where letz.jar could store. This useful for letz.sh script for launching letz.jar.  
-**~/home/user/bin/** - where letz.sh could store for launching from anywhere.  
+Also there are could be two argument keys:  
+* **~/home/user/myJars/** - where letz.jar could store. This useful for letz.sh script for launching letz.jar.  
+* **~/home/user/bin/** - where letz.sh could store for launching from anywhere.
+
 For example
 ```
 ./build.sh ~/home/user/myJars/ ~/home/user/bin/
