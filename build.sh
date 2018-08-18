@@ -9,7 +9,7 @@ echo -e '#!/bin/bash\njava -jar '$1'letz.jar $1' >> letz.sh
 chmod +x letz.sh
 mv letz.sh build
 mv letz.jar build
-if [[ $2 = "copy" ]]
-    then cp build/letz.* $1
+if [ $2 ]
+    then cp build/letz.sh $2 && cp build/letz.jar $1
 fi
 rm -r bin
