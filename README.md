@@ -34,6 +34,6 @@ or
 letz.sh
 ```
 
-After building there is another file - **letz.sh** that contains 
+After building there is another file - **letz.sh** for easy launch tool.
 
 There are three actions - **compile, run, clean**
